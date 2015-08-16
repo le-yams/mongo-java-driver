@@ -433,7 +433,7 @@ public class JsonWriter extends AbstractBsonWriter {
                 } else {
                     writer.write(" ");
                 }
-                writeStringHelper(name);
+                writeStringHelper(name, settings.getOutputMode() != JsonMode.SHELL);
                 writer.write(" : ");
                 break;
             case TOP_LEVEL:
@@ -446,7 +446,13 @@ public class JsonWriter extends AbstractBsonWriter {
     }
 
     private void writeStringHelper(final String str) throws IOException {
-        writer.write('"');
+        writeStringHelper(str, true);
+    }
+    
+    private void writeStringHelper(final String str, final boolean surroundWithQuotes) throws IOException {
+        if(surroundWithQuotes) {
+            writer.write('"');
+        }
         for (final char c : str.toCharArray()) {
             switch (c) {
                 case '"':
@@ -504,7 +510,9 @@ public class JsonWriter extends AbstractBsonWriter {
                     break;
             }
         }
-        writer.write('"');
+        if(surroundWithQuotes) {
+            writer.write('"');
+        }
     }
 
     private void throwBSONException(final IOException e) {
